@@ -13,20 +13,18 @@ import {ILFGToken} from "../interfaces/ILFGToken.sol";
 import "./LFGToken.sol";
 
 contract LFGCollection is ERC165, Context, IERC721, IERC721Errors, IERC721Metadata, ILFGCollection {
-
-    // Token name
-    string private _name;
-    // Token symbol
-    string private _symbol;
     
     uint256 public ID;
 
     address private caller;
 
+    string private _name;
+    string private _symbol;
+
     constructor(address _caller, string memory name_, string memory symbol_) {
+        caller = _caller;
         _name = name_;
         _symbol = symbol_;
-        caller = _caller;
     }
 
     mapping(uint256 => address) private _owners;
@@ -58,11 +56,11 @@ contract LFGCollection is ERC165, Context, IERC721, IERC721Errors, IERC721Metada
         string memory _content,
         string memory _tokenURI
     ) external {
-        require(_msgSender() == caller, "Non caller");
+        require(_msgSender() == caller);
         address newLFGToken = address(
             new LFGToken{
                 salt: keccak256(
-                    abi.encodePacked(ID, _tokenSymbol, _creator)
+                    abi.encodePacked(_creator, ID, block.chainid)
                 )
             }(ID)
         );
@@ -81,7 +79,7 @@ contract LFGCollection is ERC165, Context, IERC721, IERC721Errors, IERC721Metada
         });
         _safeMint(_creator, ID);
         ID++;
-        require(ILFGToken(newLFGToken).mint(_creator, _lfgMaxSupply), "Mint fail");
+        require(ILFGToken(newLFGToken).mint(_creator, _lfgMaxSupply));
     }
 
     function updateTokenURI(uint256 tokenId, string memory _tokenURI) external {

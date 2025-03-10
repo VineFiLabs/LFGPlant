@@ -21,7 +21,7 @@ contract LFGStorage is Ownable, ILFGStorage{
 
     mapping(address => mapping(uint256 => string)) private _collectMetadataInfo;
 
-    function changeOwner(address _caller) external onlyOwner {
+    function changeCaller(address _caller) external onlyOwner {
         caller = _caller;
     }
 
@@ -32,24 +32,17 @@ contract LFGStorage is Ownable, ILFGStorage{
         address collection,
         uint256 tokenId,
         uint256 totalSupply
-    ) external returns (string memory finalTokenUri) {
+    ) external onlyCaller returns (string memory finalTokenUri) {
         string memory json = Base64.encode(
             abi.encodePacked(
-                '{"name": "',
-                name,
-                '",',
+                '{"name": "', name, '", ',
                 '"description": "Welcome to LFGPlant World ! This is a wonderful collection of stories, LFG!",',
-                '"image": "',
-                imageURL,
-                '",',
+                '"image": "', imageURL, '", ',
                 '"attributes": [',
-                '{"trait_type": "Symbol", "value": ',
-                symbol,
-                "},",
-                '{"trait_type": "Amount", "value": "',
-                Strings.toString(totalSupply),
-                '"}',
-                "]}"
+                    '{"trait_type": "Symbol", "value": "', symbol, '"},',
+                    '{"trait_type": "Amount", "value": "', Strings.toString(totalSupply), '"},',
+                    '{"trait_type": "Timestamp", "value": "', Strings.toString(block.timestamp), '"}',
+                ']}'
             )
         );
         finalTokenUri = string(

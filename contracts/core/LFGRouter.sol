@@ -4,6 +4,8 @@ pragma solidity ^0.8.23;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ILFGStorage} from "../interfaces/ILFGStorage.sol";
 import {ILFGCollection} from "../interfaces/ILFGCollection.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {ILFGToken} from "../interfaces/ILFGToken.sol";
 import {IGovernance} from "../interfaces/IGovernance.sol";
 
@@ -69,6 +71,28 @@ contract LFGRouter is Ownable {
         return ILFGToken(lfg).totalSupply();
     }
 
-    
+    function getCollectionLastId(address collection)external view returns(uint256){
+        return ILFGCollection(collection).ID();
+    }
+
+    function getTokenURI(address collection, uint256 tokenId)external view returns(string memory){
+        return IERC721Metadata(collection).tokenURI(tokenId);
+    }
+
+    function getCollectionName(address collection)external view returns(string memory){
+        return IERC721Metadata(collection).name();
+    }
+
+    function getCollectionSymbol(address collection)external view returns(string memory){
+        return IERC721Metadata(collection).symbol();
+    }
+
+    function getCollectionOwner(address collection, uint256 tokenId)external view returns(address){
+        return IERC721(collection).ownerOf(tokenId);
+    }
+
+    function getCollectionBalance(address collection, address owner)external view returns(uint256){
+        return IERC721(collection).balanceOf(owner);
+    }
 
 }
